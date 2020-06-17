@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue-router</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        <div>
+            <router-link to='/'>默认首页</router-link>
+            <router-link to='/first/weiqiujuan'>首页</router-link>
+            <router-link to='/user'>sidebar</router-link>
+            <router-view name='sidebar'></router-view>
+            <router-view name='content'></router-view>
+            <button @click='this.surf'>点击我</button>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div>
+            <a href="#/login">登录组件</a>
+            <a href="#/register">注册组件</a>
+            <!-- vue--Sourcecode-router提供的函数，占位符，路由规则匹配到的组件，就会展示到此处 -->
+            <!-- 占位符 -->
+            <router-view></router-view>
+            <router-view></router-view>
+        </div>
+    </div>
+    <script>
+        var login = {
+            template: '<p>我是login组件</p>'
+        }
+        var register = {
+            template: '<p>我是register组件</p>'
+        }
+        // Vue.component('login',{
+        //     template: '<p>我是login组件</p>'
+        // })
+        //传递一个配置对象s
+        let routerObj = new VueRouter({
+            //这个配置对象中的route表示【路由配置的规则】
+            routes: [
+                //每个路由规则都是一个对象，这个规则对象都有两个必须的属性
+                // 属性： 1. path,表示监听哪个路由链接地址
+                //     2. component,表示，路由如果是前面匹配的path,则展示component属性对应的组件
+                {
+                    path: '/login',
+                    // 组件模板对象，不能是组件名称
+                    component: login,
+                    meta: {
+                        // 必须注册过才可以跳转
+                        register: true
+                    }
+                },
+                {
+                    path: '/register',
+                    // 组件模板对象，不能是组件名称
+                    component: register,
+                },
+                {
+                    path: '/user',
+                    meta: {
+                        // 必须注册过才可以跳转
+                        register: true
+                    },
+                    components: {
+                        sidebar: {
+                            template: `<p>sidebar就这样吧</p>`
+                        },
+                        content: {
+                            template: `<p>我是content</p>`
+                        },
+                    }
+
+                }
+                // }, {
+                //     path: '/first/:name',
+                //     name: 'user',
+                //     // 组件模板对象，不能是组件名称
+                //     component: {
+                //         //传参的方式: 通过params传参
+                //         template: `<div> 
+                //             <p>我叫:{{$route.params.name}}</p>
+                //             <p>我今年:{{$route.query.age}}岁了</p>
+                //             // 子路由的增加方法1
+                //             <router-link :to="'/first/' + $route.params.name+'/children'">children-link</router-link>
+                //             // 子路由增加方法2
+                //             <router-link to="children" append>children-link</router-link>
+                //             </div>
+                //             <router-view></router-view>`,
+                //     },
+                //     children: [{
+                //         path: '/children',
+                //         component: {
+                //             template: `<div> 
+                //             <p>我是子组件</p>
+                //             </div>`
+                //         }
+                //     }]
+                // }, {
+
+            ]
+        });
+        // 中间件.
+        routerObj.beforeEach(function (to, from, next) {
+            // next(false); 检测跳转
+            // next('/login'); //相当于一个重定向
+
+            var logged_in = false;
+            // 处理没有子路由的情况
+            if (!logged_in && to.path === '/post') {
+                next('/login')
+            } else {
+                next();
+            }
+            // 处理有子路由的情况
+            // 用规则去限制跳转权限的判断 
+            if (!logged_in && to.matched.some(function (item) {
+                    // return item.push === '/post'
+                    return item.meta.register
+                })) {
+                next('/login')
+            } else {
+                next();
+            }
+
+        })
+
+        router.afterEach(function (to, from) {
+
+        })
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return ({})
+            },
+            //使用watch监听变化
+            watch: {
+                '$route'(to, from) {}
+            },
+            methods: {
+                surf: function () {
+                    setTimeout(function () {
+                        this.router.push('/register');
+                        setTimeout(function () {
+                            this.router.push({
+                                name: user,
+                                params: {
+                                    name: 'weiqiujuan'
+                                }
+                            })
+                        }, 2000)
+                    }, 2000)
+
+                }
+            },
+            router: routerObj, //路由规则对象，注册到vm实例上，用来监听url地址的变化，然后展示对应的组件
+        })
+    </script>
+</body>
+
+</html>

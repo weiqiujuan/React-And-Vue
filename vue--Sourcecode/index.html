@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id='app'>
+    <h2>{{ person.name }} -- {{ person.age }}</h2>
+    <h3>{{person.fav}}</h3>
+    <ul>
+        <li>one</li>
+        <li>two</li>
+        <li>three</li>
+    </ul>
+    <h3>{{msg}}</h3>
+    <div v-text="msg"></div>
+    <div v-html="htmlStr"></div>
+    <input type="text" v-model='msg'>
+    <button @click='handleClick'>点击</button>
+    <button @click='handleClick'>点击@click</button>
+    <div>vue采用数据劫持配合发布者-订阅者模式的方式，
+        通过definedproperty来劫持各个属性的setter和setter,
+        在数据变动时，发布消息给依赖收集器
+        去通知观察者做出对应的回调函数，去更新视图
+    </div>
+    <a href="https://juejin.im/post/5edefb32518825431373704c#heading-0">视频链接</a>
+</div>
+<!--<script src="./vue--Sourcecode.js"></script>-->
+<script src="./Observer.js"></script>
+<script src="./MVue.js"></script>
+<script>
+    let vm = new MVue({
+        el: '#app',
+        data: {
+            person: {
+                name: '小王',
+                age: '18',
+                fav: 'money'
+            },
+            msg: '学习',
+            htmlStr: '<h1>正在工作</h1>'
+        },
+        methods: {
+            handleClick() {
+                this.msg = '我爱学习'
+                this.person.name = '我是改变的name'
+            }
+        }
+    })
+</script>
+</body>
+</html>
